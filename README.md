@@ -14,6 +14,7 @@ Just run:
   * [dpush](bin/dpush) to push your image
   * [dstop](bin/dstop) to stop your container
   * [dbash](bin/dbash) to run a login bash into your container
+  * [dlogs](bin/dlogs) to watch the logs of your container
 No parameters needed.
 
 Do you want to build and start your container?
