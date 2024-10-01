@@ -37,12 +37,11 @@ export DOCKER_REGISTRY=ghcr.io # the registry
 ```bash
 source .envrc
 ```
-* Install `dockenv`
+* Install `dockenv` with [homebrew](https://brew.sh/)
 ```bash
-brew tap gerardnico/dockenv https://github.com/gerardnico/dockenv.git
-brew install dockenv
+brew install --HEAD gerardnico/tap/dockenv
 ```
-* go into your project directory and run your command
+* Go into your project directory and run your command
 ```bash
 drun
 ```
@@ -67,3 +66,7 @@ DOCKER_REGISTRY=ghcr.io # the registry
 DOCKER_CONTAINER=postgres # the name of the container created
 DOCKER_PORTS=5432=5432,8080 # the ports to open
 ```
+
+## How to contribue
+
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md)
