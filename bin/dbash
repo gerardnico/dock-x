@@ -7,6 +7,6 @@ set -euo pipefail
 docker exec \
   --user 1000:1000 \
   -ti \
-  "$DOCKER_CONTAINER" \
+  "${DOCKER_CONTAINER:-dockenv}" \
   "bash" "-l"
 

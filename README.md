@@ -70,3 +70,14 @@ DOCKER_PORTS=5432=5432,8080 # the ports to open
 ## How to contribue
 
 See [CONTRIBUTING.md](.github/CONTRIBUTING.md)
+
+## Installation / Dependencies
+
+You can install `dockenv` with [homebrew](https://brew.sh/)
+```bash
+brew install --HEAD gerardnico/tap/dockenv
+```
+
+It will also install as dependency:
+* [direnv-ext](https://github.com/gerardnico/direnv-ext)
+* and [direnv](https://direnv.net/)
