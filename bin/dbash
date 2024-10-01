@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# A exec to run a login bash in the docker container
+
+set -euo pipefail
+
+
+docker exec \
+  --user 1000:1000 \
+  -ti \
+  "$DOCKER_CONTAINER" \
+  "bash" "-l"
+

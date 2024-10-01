@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Docker needs to be started from the project root
+# to mount the scripts
+pushd "$PWD"
+
+docker build . \
+  -t "${DOCKER_REGISTRY:-docker.io}"/"${DOCKER_USER}"/"${DOCKER_REPO}":"$DOCKER_TAG"
+
+popd

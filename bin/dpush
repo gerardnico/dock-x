@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Push
+docker push "${DOCKER_REGISTRY:-docker.io}"/"${DOCKER_USER}"/"${DOCKER_REPO}":"$DOCKER_TAG"
