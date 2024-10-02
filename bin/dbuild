@@ -7,6 +7,6 @@ set -euo pipefail
 pushd "$PWD"
 
 docker build . \
-  -t "${DOCKER_REGISTRY:-docker.io}"/"${DOCKER_USER}"/"${DOCKER_REPO}":"$DOCKER_TAG"
+  -t "${DOCKER_REGISTRY:-docker.io}"/"${DOCKER_NAMESPACE}"/"${DOCKER_NAME}":"$DOCKER_TAG"
 
 popd

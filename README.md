@@ -33,6 +33,7 @@ export DOCKER_TAG=16.3-latest # the tag of the image
 export DOCKER_REPO=postgres # the repo
 export DOCKER_USER=gerardnico # the user
 export DOCKER_REGISTRY=ghcr.io # the registry
+export DOCKER_PORTS=80=80,443=443 # the port to opens
 ```
 * Source your env file (Tip: Do it automatically with a env manager such as [direnv](https://direnv.net/))
 ```bash
@@ -51,24 +52,46 @@ drun
 ## List of environment variables supported by dockenv
 
 
-### Image URI
+### Image environment variables
 
 ```bash
 DOCKER_TAG=16.3-latest # the tag of the image
-DOCKER_REPO=postgres # the repo
-DOCKER_USER=gerardnico # the user
-DOCKER_REGISTRY=ghcr.io # the registry
+DOCKER_NAME=postgres # the name of the image
+DOCKER_NAMESPACE=gerardnico # the namespace of the image
+DOCKER_REGISTRY=ghcr.io # the registry of the image
 ```
 
 
-### Argument
+### Run options
 
 ```bash
 DOCKER_CONTAINER=postgres # the name of the container created
-DOCKER_PORTS=5432=5432,8080 # the ports to open
+DOCKER_PORTS=5432:5432,8080 # the ports to open
+DOCKER_USER=1000:1000 # the user that will run the image (1000 is the value for a WSL user)
+DOCKER_USER_GROUPS=postgres,root # the groups of the user 
 ```
 
-## How to contribue
+## Other options/arguments
+
+If you want to set other options/arguments, you need 
+to create a bash file and use it as it was a docker command
+
+Example with:
+* 2 mount
+* and a command (`postgres`)
+* with 2 arguments
+```bash
+#!/bin/bash
+
+drun \
+  -v "${PWD}"/mount/data:/data \
+  --mount type=bind,source="${PWD}/bin/dbctl",target=/usr/local/bin/dbctl \
+  postgres \
+  -c shared_buffers=256MB \
+  -c max_connections=200
+```
+
+### How to contribute
 
 See [CONTRIBUTING.md](.github/CONTRIBUTING.md)
 
@@ -82,3 +105,5 @@ brew install --HEAD gerardnico/tap/dockenv
 It will also install as dependency:
 * [direnv-ext](https://github.com/gerardnico/direnv-ext)
 * and [direnv](https://direnv.net/)
+
+
