@@ -9,17 +9,17 @@ you are working on a Docker image?
 `dockenv` is here to help.
 
 Just run:
-  * [dbuild](bin/dbuild) to build your image
-  * [drun](bin/drun) to start your container
-  * [dpush](bin/dpush) to push your image
-  * [dstop](bin/dstop) to stop your container
-  * [dbash](bin/dbash) to run a login bash into your container
-  * [dlogs](bin/dlogs) to watch the logs of your container
+  * [dkbuild](bin/dkbuild) to build your image
+  * [dkrun](bin/dkrun) to start your container
+  * [dkpush](bin/dkpush) to push your image
+  * [dkstop](bin/dkstop) to stop your container
+  * [dkbash](bin/dkbash) to run a login bash into your container
+  * [dklogs](bin/dklogs) to watch the logs of your container
 No parameters needed.
 
 Do you want to build and start your container?
 ```bash
-dbuild && drun
+dkbuild && dkrun
 ```
 
 ## How it works
@@ -30,8 +30,8 @@ Create:
 * an `.envrc` file at the root of your project
 ```bash
 export DOCKER_TAG=16.3-latest # the tag of the image
-export DOCKER_REPO=postgres # the repo
-export DOCKER_USER=gerardnico # the user
+export DOCKER_NAME=postgres # the repo
+export DOCKER_NAMESPACE=gerardnico # the user
 export DOCKER_REGISTRY=ghcr.io # the registry
 export DOCKER_PORTS=80=80,443=443 # the port to opens
 ```
@@ -45,7 +45,7 @@ brew install --HEAD gerardnico/tap/dockenv
 ```
 * Go into your project directory and run your command
 ```bash
-drun
+dkrun
 ```
 
 
