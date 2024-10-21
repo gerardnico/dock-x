@@ -18,11 +18,4 @@ git clone https://github.com/gerardnico/dockenv.git
 export PATH=$PWD/dockenv/bin:$PATH
 ```
 
-## Test
-
-You can install them locally from the `main branch` with this [local brew formula](../util/dockenv.rb) 
-```bash
-brew install --HEAD util/dockenv.rb
-brew reinstall util/dockenv.rb
-```
 

@@ -1,4 +1,4 @@
-# Dockenv - Docker command driven by environment variables
+# Dockenv - Docker commands driven by environment variables
 
 
 ## About
@@ -9,17 +9,17 @@ you are working on a Docker image?
 `dockenv` is here to help.
 
 Just run:
-  * [dkbuild](bin/dkbuild) to build your image
-  * [dkrun](bin/dkrun) to start your container
-  * [dkpush](bin/dkpush) to push your image
-  * [dkstop](bin/dkstop) to stop your container
-  * [dkbash](bin/dkbash) to run a login bash into your container
-  * [dklogs](bin/dklogs) to watch the logs of your container
+  * `dockenv build` to build your image
+  * `dockenv build` to start your container
+  * `dockenv push` to push your image
+  * `dockenv stop` to stop your container
+  * `dockenv shell` to run a shell (bash by default) into your container
+  * `dockenv logs` to watch the logs of your container
 No parameters needed.
 
 Do you want to build and start your container?
 ```bash
-dkbuild && dkrun
+dockenv build && dockenv run
 ```
 
 ## How it works
@@ -35,7 +35,7 @@ export DOCKER_NAMESPACE=gerardnico # the user
 export DOCKER_REGISTRY=ghcr.io # the registry
 export DOCKER_PORTS=80=80,443=443 # the port to opens
 ```
-* Source your env file (Tip: Do it automatically with a env manager such as [direnv](https://direnv.net/))
+* Source your env file (Tip: Do it automatically with an env manager such as [direnv](https://direnv.net/))
 ```bash
 source .envrc
 ```
@@ -68,7 +68,8 @@ DOCKER_REGISTRY=ghcr.io # the registry of the image
 DOCKER_CONTAINER=postgres # the name of the container created
 DOCKER_PORTS=5432:5432,8080 # the ports to open
 DOCKER_USER=1000:1000 # the user that will run the image (1000 is the value for a WSL user)
-DOCKER_USER_GROUPS=postgres,root # the groups of the user 
+DOCKER_USER_GROUPS=postgres,root # the groups of the user
+DOCKER_SHELL=/bin/bash # The shell app to run with `dockenv shell` (default to bash)
 ```
 
 ## Other options/arguments
@@ -104,6 +105,7 @@ brew install --HEAD gerardnico/tap/dockenv
 
 It will also install as dependency:
 * [direnv-ext](https://github.com/gerardnico/direnv-ext)
-* and [direnv](https://direnv.net/)
+* [direnv](https://direnv.net/)
+* [bash lib](https://github.com/gerardnico/bash-lib)
 
 
