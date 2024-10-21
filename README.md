@@ -72,7 +72,7 @@ DOCKER_USER_GROUPS=postgres,root # the groups of the user
 DOCKER_SHELL=/bin/bash # The shell app to run with `dockenv shell` (default to bash)
 ```
 
-## Other options/arguments
+## How to create your own run command
 
 If you want to set other options/arguments, you need 
 to create a bash file and use it as it was a docker command
@@ -84,7 +84,7 @@ Example with:
 ```bash
 #!/bin/bash
 
-drun \
+dockenv run \
   -v "${PWD}"/mount/data:/data \
   --mount type=bind,source="${PWD}/bin/dbctl",target=/usr/local/bin/dbctl \
   postgres \
