@@ -10,7 +10,7 @@ you are working on a Docker image?
 
 Just run:
   * `dockenv build` to build your image
-  * `dockenv build` to start your container
+  * `dockenv start` to start your container
   * `dockenv push` to push your image
   * `dockenv stop` to stop your container
   * `dockenv shell` to run a shell (bash by default) into your container
@@ -45,7 +45,7 @@ brew install --HEAD gerardnico/tap/dockenv
 ```
 * Go into your project directory and run your command
 ```bash
-dkrun
+dockenv run
 ```
 
 

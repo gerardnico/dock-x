@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
+# @name dockenv documentation
+# @brief Automated Docker Commands driven by environment variables
 # @description
-#    Automated Docker Commands driven by environment variables
+#    Set environment variables and run derived docker command
+#
 
 
 set -euo pipefail
@@ -10,6 +13,7 @@ source bashlib-command.sh
 error::set_trap
 
 
+# @internal
 # @description A exec to run an interactive command such as bash in the docker container
 dockenv_shell(){
 
@@ -30,7 +34,7 @@ dockenv_shell(){
 
 }
 
-
+# @internal
 dockenv_build(){
 
   # Docker needs to be started from the project root
@@ -46,6 +50,7 @@ dockenv_build(){
 
 }
 
+# @internal
 # @description A exec to run bash and other command into the container
 dockenv_exec(){
 
@@ -73,6 +78,7 @@ dockenv_exec(){
 
 }
 
+# @internal
 # @description Get the logs
 dockenv_logs(){
 
@@ -81,6 +87,7 @@ dockenv_logs(){
 
 }
 
+# @internal
 # @description Push the image to the registry
 dockenv_push(){
 
@@ -88,6 +95,7 @@ dockenv_push(){
 
 }
 
+# @internal
 # @description Run the image
 dockenv_run(){
 
@@ -192,6 +200,7 @@ dockenv_run(){
 
 }
 
+# @internal
 # @description return the image name
 get_image_full_name(){
   DOCKER_REGISTRY_PART=''
@@ -202,12 +211,14 @@ get_image_full_name(){
   echo "${DOCKER_REGISTRY_PART}${DOCKER_NAMESPACE:-DOCKER_NAMESPACE}/${DOCKER_NAME:-DOCKER_NAME}:${DOCKER_TAG:-latest}"
 }
 
+# @internal
 dockenv_stop(){
 
   command::echo_eval "docker stop ${DOCKER_CONTAINER:-dockenv}"
 
 }
 
+# @internal
 # @description Print the env
 # @args $1 A marge can be specified with a number of blank space
 dockenv_env(){
@@ -227,6 +238,7 @@ dockenv_env(){
 
 }
 
+# @internal
 dockenv_usage(){
    FULL_IMAGE_NAME=$(get_image_full_name)
 cat << EOT
@@ -252,15 +264,6 @@ $(dockenv_env "    " 2>&1)
 EOT
 }
 
-# Mandatory
-DOCKER_NAMESPACE=${DOCKER_NAMESPACE:-}
-if [ "$DOCKER_NAMESPACE" = "" ]; then
-  echo::err "The environment variable DOCKER_NAMESPACE is not set. The image namespace is unknown."
-fi
-DOCKER_NAME=${DOCKER_NAME:-}
-if [ "$DOCKER_NAME" = "" ]; then
-  echo::err "The environment variable DOCKER_NAME is not set. The image name is unknown."
-fi
 
 # Assign the first argument to a string
 COMMAND="${1:-}"
@@ -270,6 +273,23 @@ if [ "$COMMAND" = "" ]; then
     exit 1
 fi
 shift  # Remove the first argument from the argument list
+
+# Help Asked should not fail for the doc
+# We test if before the error warning
+if [[ $COMMAND =~ "help"|"-h"|"--help" ]]; then
+  dockenv_usage
+  exit
+fi
+
+# Mandatory Env
+DOCKER_NAMESPACE=${DOCKER_NAMESPACE:-}
+if [ "$DOCKER_NAMESPACE" = "" ]; then
+  echo::err "The environment variable DOCKER_NAMESPACE is not set. The image namespace is unknown."
+fi
+DOCKER_NAME=${DOCKER_NAME:-}
+if [ "$DOCKER_NAME" = "" ]; then
+  echo::err "The environment variable DOCKER_NAME is not set. The image name is unknown."
+fi
 
 # Assign the rest of the arguments to an array
 declare -a ARGS=()
