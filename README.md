@@ -42,6 +42,8 @@ source .envrc
 * Install `dockenv` with [homebrew](https://brew.sh/)
 ```bash
 brew install --HEAD gerardnico/tap/dockenv
+# Add the libraries directory into your path in your `.bashrc` file
+export PATH=$(brew --prefix bashlib)/lib:$PATH
 ```
 * Go into your project directory and run your command
 ```bash
