@@ -6,16 +6,16 @@
 ## Download the source code
 
 ```bash
-git clone git@github.com:gerardnico/dockenv.git
+git clone git@github.com:gerardnico/dock-x.git
 # or 
-git clone https://github.com/gerardnico/dockenv.git
+git clone https://github.com/gerardnico/dock-x.git
 ```
 
 
 ## Update the path
 
 ```bash
-export PATH=$PWD/dockenv/bin:$PATH
+export PATH=$PWD/dock-x/bin:$PATH
 ```
 
 

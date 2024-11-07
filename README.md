@@ -1,4 +1,4 @@
-# Dockenv - Docker commands driven by environment variables
+# Dock-X - Docker commands driven by environment variables
 
 
 ## About
@@ -6,72 +6,74 @@
 Are you tired to copy/paste docker command into your shell when
 you are working on a Docker image?
 
-`dockenv` is here to help.
+`dock-x` is here to help.
 
 Just run:
-  * `dockenv build` to build your image
-  * `dockenv start` to start your container
-  * `dockenv push` to push your image
-  * `dockenv stop` to stop your container
-  * `dockenv shell` to run a shell (bash by default) into your container
-  * `dockenv logs` to watch the logs of your container
+  * `dock-x build` to build your image
+  * `dock-x start` to start your container
+  * `dock-x push` to push your image
+  * `dock-x stop` to stop your container
+  * `dock-x shell` to run a shell (bash by default) into your container
+  * `dock-x logs` to watch the logs of your container
 No parameters needed.
 
 Do you want to build and start your container?
 ```bash
-dockenv build && dockenv run
+dock-x build && dock-x run
+# with alias
+dx build && dx run
 ```
 
 ## How it works
 
-`dockenv` command fills automatically docker parameters from environment variables.
+`dock-x` command fills automatically docker parameters from environment variables.
 
 Create:
 * an `.envrc` file at the root of your project
 ```bash
-export DOCKER_TAG=16.3-latest # the tag of the image
-export DOCKER_NAME=postgres # the repo
-export DOCKER_NAMESPACE=gerardnico # the user
-export DOCKER_REGISTRY=ghcr.io # the registry
-export DOCKER_PORTS=80=80,443=443 # the port to opens
+export DOCK_X_TAG=16.3-latest # the tag of the image
+export DOCK_X_NAME=postgres # the repo
+export DOCK_X_NAMESPACE=gerardnico # the user
+export DOCK_X_REGISTRY=ghcr.io # the registry
+export DOCK_X_PORTS=80=80,443=443 # the port to opens
 ```
 * Source your env file (Tip: Do it automatically with an env manager such as [direnv](https://direnv.net/))
 ```bash
 source .envrc
 ```
-* Install `dockenv` with [homebrew](https://brew.sh/)
+* Install `dock-x` with [homebrew](https://brew.sh/)
 ```bash
-brew install --HEAD gerardnico/tap/dockenv
+brew install --HEAD gerardnico/tap/dockx
 # Add the libraries directory into your path in your `.bashrc` file
 export PATH=$(brew --prefix bashlib)/lib:$PATH
 ```
 * Go into your project directory and run your command
 ```bash
-dockenv run
+dock-x run
 ```
 
 
-## List of environment variables supported by dockenv
+## List of environment variables supported by dock-x
 
 
 ### Image environment variables
 
 ```bash
-DOCKER_TAG=16.3-latest # the tag of the image
-DOCKER_NAME=postgres # the name of the image
-DOCKER_NAMESPACE=gerardnico # the namespace of the image
-DOCKER_REGISTRY=ghcr.io # the registry of the image
+DOCK_X_TAG=16.3-latest # the tag of the image
+DOCK_X_NAME=postgres # the name of the image
+DOCK_X_NAMESPACE=gerardnico # the namespace of the image
+DOCK_X_REGISTRY=ghcr.io # the registry of the image
 ```
 
 
 ### Run options
 
 ```bash
-DOCKER_CONTAINER=postgres # the name of the container created
-DOCKER_PORTS=5432:5432,8080 # the ports to open
-DOCKER_USER=1000:1000 # the user that will run the image (1000 is the value for a WSL user)
-DOCKER_USER_GROUPS=postgres,root # the groups of the user
-DOCKER_SHELL=/bin/bash # The shell app to run with `dockenv shell` (default to bash)
+DOCK_X_CONTAINER=postgres # the name of the container created
+DOCK_X_PORTS=5432:5432,8080 # the ports to open
+DOCK_X_USER=1000:1000 # the user that will run the image (1000 is the value for a WSL user)
+DOCK_X_USER_GROUPS=postgres,root # the groups of the user
+DOCK_X_SHELL="/usr/bin/env bash" # The shell app to run with `dock-x shell` (default to bash)
 ```
 
 ## How to create your own run command
@@ -86,7 +88,7 @@ Example with:
 ```bash
 #!/bin/bash
 
-dockenv run \
+dock-x run \
   -v "${PWD}"/mount/data:/data \
   --mount type=bind,source="${PWD}/bin/dbctl",target=/usr/local/bin/dbctl \
   postgres \
@@ -94,15 +96,17 @@ dockenv run \
   -c max_connections=200
 ```
 
-### How to contribute
 
-See [CONTRIBUTING.md](.github/CONTRIBUTING.md)
 
 ## Installation / Dependencies
 
-You can install `dockenv` with [homebrew](https://brew.sh/)
+You can install `dock-x` with [homebrew](https://brew.sh/)
 ```bash
-brew install --HEAD gerardnico/tap/dockenv
+brew install --HEAD gerardnico/tap/dockx
+```
+Then set the `BASHLIB_LIBRARY_PATH` 
+```bash
+export BASHLIB_LIBRARY_PATH=$(brew --prefix bashlib)/lib
 ```
 
 It will also install as dependency:
@@ -111,3 +115,13 @@ It will also install as dependency:
 * [bash lib](https://github.com/gerardnico/bash-lib)
 
 
+### How to contribute
+
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md)
+
+## Tip
+
+Create a `dx` alias in your `.bashrc` to save some keystrokes.
+```bash
+alias dx="dock-x"
+```

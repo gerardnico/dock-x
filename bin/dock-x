@@ -1,41 +1,42 @@
 #!/usr/bin/env bash
-# @name dockenv documentation
-# @brief Automated Docker Commands driven by environment variables
-# @description
-#    Set environment variables and run derived docker command
-#
 
 
 set -Eeuo pipefail
-source bashlib-echo.sh
+# shellcheck source=../..//bash-lib/lib/bashlib-error.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
 source bashlib-error.sh
-source bashlib-command.sh
 error::set_trap
+# shellcheck source=../..//bash-lib/lib/bashlib-echo.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
+# shellcheck source=../..//bash-lib/lib/bashlib-command.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-command.sh"
+# shellcheck source=../..//bash-lib/lib/bashlib-doc.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-doc.sh"
 
 
 # @internal
 # @description A exec to run an interactive command such as bash in the docker container
-dockenv_shell(){
+dock_x_shell(){
 
   # The user
   declare -a DOCKER_USER_ARG=()
-  DOCKER_USER=${DOCKER_USER:-}
-  if [ "$DOCKER_PORTS" != "" ]; then
+  DOCK_X_USER=${DOCK_X_USER:-}
+  if [ "$DOCK_X_PORTS" != "" ]; then
     DOCKER_USER_ARG+=("--user")
-    DOCKER_USER_ARG+=("$DOCKER_USER")
+    DOCKER_USER_ARG+=("$DOCK_X_USER")
   fi
 
   command::echo_eval "docker exec \
     ${DOCKER_USER_ARG[*]} \
     -ti \
-    ${DOCKER_CONTAINER:-dockenv} \
-    ${DOCKER_SHELL:-bash} ${*}"
+    ${DOCK_X_CONTAINER:-dock-x} \
+    ${DOCK_X_SHELL:-bash} ${*}"
 
 
 }
 
 # @internal
-dockenv_build(){
+dock_x_build(){
 
   # Docker needs to be started from the project root
   # to mount the scripts
@@ -43,7 +44,7 @@ dockenv_build(){
 
   command::echo_eval "docker build . \
     ${*} \
-    -t ${DOCKER_REGISTRY:-docker.io}/${DOCKER_NAMESPACE}/${DOCKER_NAME}:$DOCKER_TAG
+    -t ${DOCK_X_REGISTRY:-docker.io}/${DOCK_X_NAMESPACE}/${DOCK_X_NAME}:$DOCK_X_TAG
   "
 
   popd
@@ -52,7 +53,7 @@ dockenv_build(){
 
 # @internal
 # @description A exec to run bash and other command into the container
-dockenv_exec(){
+dock_x_exec(){
 
 
   if [ "$1" == "" ]; then
@@ -63,42 +64,42 @@ dockenv_exec(){
 
   # The user
   declare -a DOCKER_USER_ARG=()
-  DOCKER_USER=${DOCKER_USER:-}
-  DOCKER_PORTS=${DOCKER_PORTS:-}
-  if [ "$DOCKER_PORTS" != "" ]; then
+  DOCK_X_USER=${DOCK_X_USER:-}
+  DOCK_X_PORTS=${DOCK_X_PORTS:-}
+  if [ "$DOCK_X_PORTS" != "" ]; then
     DOCKER_USER_ARG+=("--user")
-    DOCKER_USER_ARG+=("$DOCKER_USER")
+    DOCKER_USER_ARG+=("$DOCK_X_USER")
   fi
 
 
   command::echo_eval "docker exec \
     ${DOCKER_USER_ARG[*]} \
     -ti \
-    ${DOCKER_CONTAINER:-dockenv} \
+    ${DOCK_X_CONTAINER:-dock-x} \
     ${*}"
 
 }
 
 # @internal
 # @description Get the logs
-dockenv_logs(){
+dock_x_logs(){
 
   command::echo_eval "docker logs \
-    -f ${DOCKER_CONTAINER:-dockenv}"
+    -f ${DOCK_X_CONTAINER:-dock-x}"
 
 }
 
 # @internal
 # @description Push the image to the registry
-dockenv_push(){
+dock_x_push(){
 
-  command::echo_eval "docker push ${DOCKER_REGISTRY:-docker.io}/${DOCKER_NAMESPACE}/${DOCKER_NAME}:$DOCKER_TAG"
+  command::echo_eval "docker push ${DOCK_X_REGISTRY:-docker.io}/${DOCK_X_NAMESPACE}/${DOCK_X_NAME}:$DOCK_X_TAG"
 
 }
 
 # @internal
 # @description Run the image
-dockenv_run(){
+dock_x_run(){
 
   # Docker needs to be started from the project root
   # to mount the volumes
@@ -123,9 +124,9 @@ dockenv_run(){
 
   # Set the ports
   declare -a DOCKER_PORTS_ARGS=()
-  DOCKER_PORTS=${DOCKER_PORTS:-}
-  if [ "$DOCKER_PORTS" != "" ]; then
-    IFS=',' read -ra DOCKER_PORTS_AS_ARRAY <<< "$DOCKER_PORTS"
+  DOCK_X_PORTS=${DOCK_X_PORTS:-}
+  if [ "$DOCK_X_PORTS" != "" ]; then
+    IFS=',' read -ra DOCKER_PORTS_AS_ARRAY <<< "$DOCK_X_PORTS"
     for DOCKER_PORT_MAPPING in "${DOCKER_PORTS_AS_ARRAY[@]}"; do
         if [[ $DOCKER_PORT_MAPPING != "" ]]; then
             DOCKER_PORTS_ARGS+=("-p")
@@ -136,9 +137,9 @@ dockenv_run(){
 
   # Set the groups
   declare -a DOCKER_USER_GROUPS_ARGS=()
-  DOCKER_USER_GROUPS=${DOCKER_USER_GROUPS:-}
-  if [ "$DOCKER_USER_GROUPS" != "" ]; then
-    IFS=',' read -ra DOCKER_USER_GROUPS_AS_ARRAY <<< "$DOCKER_USER_GROUPS"
+  DOCK_X_USER_GROUPS=${DOCK_X_USER_GROUPS:-}
+  if [ "$DOCK_X_USER_GROUPS" != "" ]; then
+    IFS=',' read -ra DOCKER_USER_GROUPS_AS_ARRAY <<< "$DOCK_X_USER_GROUPS"
     for DOCKER_USER_GROUP in "${DOCKER_USER_GROUPS_AS_ARRAY[@]}"; do
         if [[ $DOCKER_USER_GROUP != "" ]]; then
             DOCKER_USER_GROUPS_ARGS+=("--group-add")
@@ -149,10 +150,10 @@ dockenv_run(){
 
   # The user
   declare -a DOCKER_USER_ARG=()
-  DOCKER_USER=${DOCKER_USER:-}
-  if [ "$DOCKER_PORTS" != "" ]; then
+  DOCK_X_USER=${DOCK_X_USER:-}
+  if [ "$DOCK_X_PORTS" != "" ]; then
     DOCKER_USER_ARG+=("--user")
-    DOCKER_USER_ARG+=("$DOCKER_USER")
+    DOCKER_USER_ARG+=("$DOCK_X_USER")
   fi
 
 
@@ -187,7 +188,7 @@ dockenv_run(){
 
   # Start the container
   command::echo_eval "docker run \
-    --name ${DOCKER_CONTAINER:-dockenv} \
+    --name ${DOCK_X_CONTAINER:-dock-x} \
     ${DOCKER_USER_ARG[*]} \
     ${DOCKER_USER_GROUPS_ARGS[*]} \
     --rm \
@@ -205,62 +206,68 @@ dockenv_run(){
 # @description return the image name
 get_image_full_name(){
   DOCKER_REGISTRY_PART=''
-  DOCKER_REGISTRY=${DOCKER_REGISTRY:-}
-  if [ "$DOCKER_REGISTRY" != "" ]; then
-    DOCKER_REGISTRY_PART="${DOCKER_REGISTRY}/"
+  DOCK_X_REGISTRY=${DOCK_X_REGISTRY:-}
+  if [ "$DOCK_X_REGISTRY" != "" ]; then
+    DOCKER_REGISTRY_PART="${DOCK_X_REGISTRY}/"
   fi
-  echo "${DOCKER_REGISTRY_PART}${DOCKER_NAMESPACE:-DOCKER_NAMESPACE}/${DOCKER_NAME:-DOCKER_NAME}:${DOCKER_TAG:-latest}"
+  echo "${DOCKER_REGISTRY_PART}${DOCK_X_NAMESPACE:-DOCK_X_NAMESPACE}/${DOCK_X_NAME:-DOCK_X_NAME}:${DOCK_X_TAG:-latest}"
 }
 
 # @internal
-dockenv_stop(){
+dock_x_stop(){
 
-  command::echo_eval "docker stop ${DOCKER_CONTAINER:-dockenv}"
+  command::echo_eval "docker stop ${DOCK_X_CONTAINER:-dock-x}"
 
 }
 
 # @internal
 # @description Print the env
 # @args $1 A marge can be specified with a number of blank space
-dockenv_env(){
+dock_x_env(){
 
   MARGE=${1:-}
 
-  echo "${MARGE}Image Registry    : DOCKER_REGISTRY=${DOCKER_REGISTRY:-docker.io}"
-  echo "${MARGE}Image Namespace   : DOCKER_NAMESPACE=${DOCKER_NAMESPACE:-}"
-  echo "${MARGE}Image Name        : DOCKER_NAME=${DOCKER_NAME:-}"
-  echo "${MARGE}Image Tag         : DOCKER_TAG=${DOCKER_TAG:-latest}"
-  echo "${MARGE}Container Name    : DOCKER_CONTAINER=${DOCKER_CONTAINER:-dockenv}"
-  echo "${MARGE}Container User    : DOCKER_USER=${DOCKER_USER:-}"
-  echo "${MARGE}Container Port    : DOCKER_PORTS=${DOCKER_PORTS:-}"
-  echo "${MARGE}Container Shell   : DOCKER_SHELL=${DOCKER_SHELL:-/bin/bash}"
+  echo "${MARGE}* Image Registry    : DOCK_X_REGISTRY=${DOCK_X_REGISTRY:-docker.io}"
+  echo "${MARGE}* Image Namespace   : DOCK_X_NAMESPACE=${DOCK_X_NAMESPACE:-}"
+  echo "${MARGE}* Image Name        : DOCK_X_NAME=${DOCK_X_NAME:-}"
+  echo "${MARGE}* Image Tag         : DOCK_X_TAG=${DOCK_X_TAG:-latest}"
+  echo "${MARGE}* Container Name    : DOCK_X_CONTAINER=${DOCK_X_CONTAINER:-dock-x}"
+  echo "${MARGE}* Container User    : DOCK_X_USER=${DOCK_X_USER:-}"
+  echo "${MARGE}* Container Port    : DOCK_X_PORTS=${DOCK_X_PORTS:-}"
+  echo "${MARGE}* Container Shell   : DOCK_X_SHELL=${DOCK_X_SHELL:-/usr/bin/env bash}"
 
 
 
 }
 
 # @internal
-dockenv_usage(){
+synopsis(){
    FULL_IMAGE_NAME=$(get_image_full_name)
 cat << EOT
 
-  Dockenv - Automated Docker Commands driven by environment variables
+$(basename "$0") - Automated Docker Commands driven by environment variables
 
-  Usage: $(basename "$0") <command> <opts>
+Usage:
+\`\`\`bash
+$(basename "$0") command opts
+\`\`\`
 
-  Commands:
-    build                           Build the image $FULL_IMAGE_NAME
-    exec                            Exec into the container ${DOCKER_CONTAINER:-DOCKER_CONTAINER}
-    env                             Print the actual dockenv env that drives the docker command
-    shell                           Start the ${DOCKER_SHELL:-bash} shell into the container ${DOCKER_CONTAINER:-DOCKER_CONTAINER}
-    logs                            Logs of the container ${DOCKER_CONTAINER:-DOCKER_CONTAINER}
-    push                            Push the image $FULL_IMAGE_NAME
+Commands:
 
-  Global Options:
-    -h --help                       Show this help message
+* build                           Build the image $FULL_IMAGE_NAME
+* exec                            Exec into the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
+* env                             Print the actual $(basename "$0") env that drives the docker command
+* shell                           Start the ${DOCK_X_SHELL:-bash} shell into the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
+* logs                            Logs of the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
+* push                            Push the image $FULL_IMAGE_NAME
 
-  Actual Env:
-$(dockenv_env "    " 2>&1)
+Global Options:
+
+* -h --help                       Show this help message
+
+Actual Env:
+
+$(dock_x_env "" 2>&1)
 
 EOT
 }
@@ -269,7 +276,7 @@ EOT
 # Assign the first argument to a string
 COMMAND="${1:-}"
 if [ "$COMMAND" = "" ]; then
-    dockenv_usage
+    synopsis
     echo::err "A command is mandatory"
     exit 1
 fi
@@ -277,19 +284,26 @@ shift  # Remove the first argument from the argument list
 
 # Help Asked should not fail for the doc
 # We test if before the error warning
-if [[ $COMMAND =~ "help"|"-h"|"--help" ]]; then
-  dockenv_usage
+if [[ $COMMAND =~ help|-h|--help ]]; then
+  doc::help synopsis
   exit
 fi
 
-# Mandatory Env
-DOCKER_NAMESPACE=${DOCKER_NAMESPACE:-}
-if [ "$DOCKER_NAMESPACE" = "" ]; then
-  echo::err "The environment variable DOCKER_NAMESPACE is not set. The image namespace is unknown."
+if [[ $COMMAND == "synopsis" ]]; then
+  synopsis
+  exit
 fi
-DOCKER_NAME=${DOCKER_NAME:-}
-if [ "$DOCKER_NAME" = "" ]; then
-  echo::err "The environment variable DOCKER_NAME is not set. The image name is unknown."
+
+
+
+# Mandatory Env
+DOCK_X_NAMESPACE=${DOCK_X_NAMESPACE:-}
+if [ "$DOCK_X_NAMESPACE" = "" ]; then
+  echo::err "The environment variable DOCK_X_NAMESPACE is not set. The image namespace is unknown."
+fi
+DOCK_X_NAME=${DOCK_X_NAME:-}
+if [ "$DOCK_X_NAME" = "" ]; then
+  echo::err "The environment variable DOCK_X_NAME is not set. The image name is unknown."
 fi
 
 # Assign the rest of the arguments to an array
@@ -299,31 +313,28 @@ ARGS=("$@")
 
  case $COMMAND in
   "build")
-      dockenv_build "${ARGS[@]}"
+      dock_x_build "${ARGS[@]}"
       ;;
   "env")
-      dockenv_env "${ARGS[@]}"
+      dock_x_env "${ARGS[@]}"
       ;;
   "exec")
-      dockenv_exec "${ARGS[@]}"
+      dock_x_exec "${ARGS[@]}"
       ;;
   "logs")
-      dockenv_logs "${ARGS[@]}"
+      dock_x_logs "${ARGS[@]}"
       ;;
   "push")
-      dockenv_push "${ARGS[@]}"
+      dock_x_push "${ARGS[@]}"
       ;;
   "run")
-      dockenv_run "${ARGS[@]}"
+      dock_x_run "${ARGS[@]}"
       ;;
   "shell")
-      dockenv_shell "${ARGS[@]}"
-      ;;
-  "help"|"-h"|"--help")
-      dockenv_usage "${ARGS[@]}"
+      dock_x_shell "${ARGS[@]}"
       ;;
   *)
-    dockenv_usage
+    dock::help synopsis
     echo::err "Command $COMMAND is unknown"
     exit 1
  esac
