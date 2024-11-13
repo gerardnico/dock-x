@@ -4,7 +4,7 @@
 set -Eeuo pipefail
 # shellcheck source=../..//bash-lib/lib/bashlib-error.sh
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
-source bashlib-error.sh
+error::set_strict_mode
 error::set_trap
 # shellcheck source=../..//bash-lib/lib/bashlib-echo.sh
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
@@ -22,16 +22,24 @@ dock_x_shell(){
   # The user
   declare -a DOCKER_USER_ARG=()
   DOCK_X_USER=${DOCK_X_USER:-}
-  if [ "$DOCK_X_PORTS" != "" ]; then
+  if [ "$DOCK_X_USER" != "" ]; then
     DOCKER_USER_ARG+=("--user")
     DOCKER_USER_ARG+=("$DOCK_X_USER")
+  fi
+  DOCK_X_CONTAINER=${DOCK_X_CONTAINER:-dock-x}
+  DOCK_X_SHELL=${DOCK_X_SHELL:-/usr/bin/env bash}
+  if ! docker container inspect -f '{{.State.Running}}' DOCK_X_CONTAINER; then
+    echo::warn "The container $DOCK_X_CONTAINER (DOCK_X_CONTAINER) is not running"
+    echo::warn "Executing an ephemeral container image with a shell"
+    dock_x_run --rm --tty --interactive "${DOCK_X_SHELL}"
+    return
   fi
 
   command::echo_eval "docker exec \
     ${DOCKER_USER_ARG[*]} \
     -ti \
-    ${DOCK_X_CONTAINER:-dock-x} \
-    ${DOCK_X_SHELL:-bash} ${*}"
+    ${DOCK_X_CONTAINER} \
+    ${DOCK_X_SHELL} ${*}"
 
 
 }
@@ -43,10 +51,16 @@ dock_x_shell(){
 #
 dock_x_build(){
 
+  args=()
+  if [ $# -eq 0 ]; then
+    args+=(".")
+  else
+    args=("$@")
+  fi
 
   command::echo_eval "docker build \
     -t ${DOCK_X_REGISTRY:-docker.io}/${DOCK_X_NAMESPACE}/${DOCK_X_NAME}:$DOCK_X_TAG \
-    ${*}
+    ${args[*]}
   "
 
 }
@@ -162,18 +176,24 @@ dock_x_run(){
   # is shift
   while [[ $# -gt 0 ]]; do
     case "$1" in
+    --rm)
+      # Nothing already added
+      ;;
+    --user)
+      shift
+      echo::debug "User flag ($1) found"
+      DOCKER_USER_ARG+=("$1")
+      ;;
+    --tty|-t|--interactive|-i)
+      echo::debug "Emtpy Option flag ($1) found"
+      DOCKER_OPTIONS+=("$1")
+      ;;
     -*)
-      if [ ${#DOCKER_COMMAND_ARGS[@]} -eq 0 ]; then
-        echo::debug "Options flag ($1) found"
-        DOCKER_OPTIONS+=("$1")
-        shift
-        echo::debug "Options value ($1) found"
-        DOCKER_OPTIONS+=("$1")
-      else
-        # An option for the command
-        echo::debug "Command/Arg ($1) found"
-        DOCKER_COMMAND_ARGS+=("$1")
-      fi
+      echo::debug "Value Option flag ($1) found"
+      DOCKER_OPTIONS+=("$1")
+      shift
+      echo::debug "Value Option flag ($1) found"
+      DOCKER_OPTIONS+=("$1")
       ;;
     *)
       echo::debug "Command/Arg ($1) found"
@@ -185,7 +205,7 @@ dock_x_run(){
 
 
   # Start the container
-  command::echo_debug_eval "docker run \
+  command::echo_eval "docker run \
     --name ${DOCK_X_CONTAINER:-dock-x} \
     ${DOCKER_USER_ARG[*]} \
     ${DOCKER_USER_GROUPS_ARGS[*]} \
@@ -202,6 +222,7 @@ dock_x_run(){
 # @description return the image name
 get_image_full_name(){
   DOCKER_REGISTRY_PART=''
+  # empty is the same as docker.io
   DOCK_X_REGISTRY=${DOCK_X_REGISTRY:-}
   if [ "$DOCK_X_REGISTRY" != "" ]; then
     DOCKER_REGISTRY_PART="${DOCK_X_REGISTRY}/"
@@ -253,7 +274,7 @@ Commands:
 * build                           Build the image $FULL_IMAGE_NAME. You still needs to give the context as argument.
 * exec                            Exec into the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
 * env                             Print the actual $(basename "$0") env that drives the docker command
-* shell                           Start the ${DOCK_X_SHELL:-bash} shell into the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
+* shell                           Start a ${DOCK_X_SHELL:-bash} shell into the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
 * logs                            Logs of the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
 * push                            Push the image $FULL_IMAGE_NAME
 
@@ -327,7 +348,7 @@ case $COMMAND in
     dock_x_run "${ARGS[@]}" || error::exit $?
     ;;
 "shell")
-    dock_x_shell "${ARGS[@]}"
+    dock_x_shell "${ARGS[@]}" || error::exit $?
     ;;
 *)
   dock::help synopsis

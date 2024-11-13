@@ -20,7 +20,7 @@ No parameters needed.
 Do you want to build and start your container?
 ```bash
 dock-x build && dock-x run
-# with alias
+alias dx=dock-x
 dx build && dx run
 ```
 
@@ -31,11 +31,11 @@ dx build && dx run
 Create:
 * an `.envrc` file at the root of your project
 ```bash
-export DOCK_X_TAG=16.3-latest # the tag of the image
-export DOCK_X_NAME=postgres # the repo
-export DOCK_X_NAMESPACE=gerardnico # the user
-export DOCK_X_REGISTRY=ghcr.io # the registry
-export DOCK_X_PORTS=80=80,443=443 # the port to opens
+export DOCK_X_TAG=16.3-latest # the tag of the image (default to latest)
+export DOCK_X_NAME=postgres # the name of the image (mandatory)
+export DOCK_X_NAMESPACE=gerardnico # the image namespace (mandatory)
+export DOCK_X_REGISTRY=ghcr.io # the registry (default to docker.io)
+export DOCK_X_PORTS=80=80,443=443 # the port to opens (none by default)
 ```
 * Source your env file (Tip: Do it automatically with an env manager such as [direnv](https://direnv.net/))
 ```bash
@@ -46,10 +46,14 @@ source .envrc
 brew install --HEAD gerardnico/tap/dockx
 # Add the libraries directory into your path in your `.bashrc` file
 export PATH=$(brew --prefix bashlib)/lib:$PATH
+# or define BASHLIB_LIBRARY_PATH
+export BASHLIB_LIBRARY_PATH=$(brew --prefix bashlib)/lib
 ```
 * Go into your project directory and run your command
 ```bash
 dock-x run
+# or
+dock-x build
 ```
 
 
@@ -59,21 +63,21 @@ dock-x run
 ### Image environment variables
 
 ```bash
-DOCK_X_TAG=16.3-latest # the tag of the image
+DOCK_X_TAG=16.3-latest # the tag of the image (default to latest)
 DOCK_X_NAME=postgres # the name of the image
 DOCK_X_NAMESPACE=gerardnico # the namespace of the image
-DOCK_X_REGISTRY=ghcr.io # the registry of the image
+DOCK_X_REGISTRY=ghcr.io # the registry of the image (default to docker.io, ie empty string)
 ```
 
 
 ### Run options
 
 ```bash
-DOCK_X_CONTAINER=postgres # the name of the container created
-DOCK_X_PORTS=5432:5432,8080 # the ports to open
-DOCK_X_USER=1000:1000 # the user that will run the image (1000 is the value for a WSL user)
-DOCK_X_USER_GROUPS=postgres,root # the groups of the user
-DOCK_X_SHELL="/usr/bin/env bash" # The shell app to run with `dock-x shell` (default to bash)
+DOCK_X_CONTAINER=containername # the name of the container created (Default to dock-x) 
+DOCK_X_PORTS=5432:5432,8080 # the ports to open (Default to empty) 
+DOCK_X_USER=1000:1000 # the user that will run the image (1000 is the value for a WSL user) Default to empty
+DOCK_X_USER_GROUPS=postgres,root # the groups of the user (Default to empty)
+DOCK_X_SHELL="/usr/bin/env bash" # The shell app to run with `dock-x shell` (default to /usr/bin/env bash)
 ```
 
 ## How to create your own run command
@@ -124,4 +128,12 @@ See [CONTRIBUTING.md](.github/CONTRIBUTING.md)
 Create a `dx` alias in your `.bashrc` to save some keystrokes.
 ```bash
 alias dx="dock-x"
+```
+
+## Debug
+
+Set
+```bash
+export BASHLIB_ECHO_LEVEL=4
+dock-x command
 ```
