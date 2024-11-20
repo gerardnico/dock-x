@@ -28,7 +28,7 @@ dock_x_shell(){
   fi
   DOCK_X_CONTAINER=${DOCK_X_CONTAINER:-dock-x}
   DOCK_X_SHELL=${DOCK_X_SHELL:-/usr/bin/env bash}
-  if ! docker container inspect -f '{{.State.Running}}' DOCK_X_CONTAINER; then
+  if ! docker container inspect -f '{{.State.Running}}' "$DOCK_X_CONTAINER" >/dev/null; then
     echo::warn "The container $DOCK_X_CONTAINER (DOCK_X_CONTAINER) is not running"
     echo::warn "Executing an ephemeral container image with a shell"
     dock_x_run --rm --tty --interactive "${DOCK_X_SHELL}"
@@ -163,14 +163,14 @@ dock_x_run(){
   # The user
   declare -a DOCKER_USER_ARG=()
   DOCK_X_USER=${DOCK_X_USER:-}
-  if [ "$DOCK_X_PORTS" != "" ]; then
+  if [ "$DOCK_X_USER" != "" ]; then
     DOCKER_USER_ARG+=("--user")
     DOCKER_USER_ARG+=("$DOCK_X_USER")
   fi
 
 
-  declare -a DOCKER_OPTIONS=()
-  declare -a DOCKER_COMMAND_ARGS=()
+  DOCKER_OPTIONS=()
+  DOCKER_COMMAND_ARGS=()
   # Parsing
   # We don't do a loop because the drive
   # is shift
@@ -189,11 +189,18 @@ dock_x_run(){
       DOCKER_OPTIONS+=("$1")
       ;;
     -*)
-      echo::debug "Value Option flag ($1) found"
-      DOCKER_OPTIONS+=("$1")
-      shift
-      echo::debug "Value Option flag ($1) found"
-      DOCKER_OPTIONS+=("$1")
+      # Shortcut but the first word without - is the command
+      # if found the next options are arguments options, not docker option
+      if [[ ${#DOCKER_COMMAND_ARGS[@]} -eq 0 ]]; then
+        echo::debug "Value Option flag ($1) found"
+        DOCKER_OPTIONS+=("$1")
+        shift
+        echo::debug "Value Option flag ($1) found"
+        DOCKER_OPTIONS+=("$1")
+      else
+        echo::debug "Command/Arg Options ($1) found"
+        DOCKER_COMMAND_ARGS+=("$1")
+      fi
       ;;
     *)
       echo::debug "Command/Arg ($1) found"
