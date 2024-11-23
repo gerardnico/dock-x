@@ -185,7 +185,7 @@ dock_x_run(){
       echo::debug "User flag ($1) found"
       DOCKER_USER_ARG+=("$1")
       ;;
-    --tty|-t|--interactive|-i)
+    --tty|-t|--interactive|-i|-d|--detach)
       echo::debug "Emtpy Option flag ($1) found"
       DOCKER_OPTIONS+=("$1")
       ;;
