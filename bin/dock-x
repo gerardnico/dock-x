@@ -44,6 +44,7 @@ dock_x_shell(){
 
 }
 
+
 # Build just set the t parameter
 #
 # Example for mono-repo build
@@ -237,7 +238,7 @@ get_image_full_name(){
   echo "${DOCKER_REGISTRY_PART}${DOCK_X_NAMESPACE:-DOCK_X_NAMESPACE}/${DOCK_X_NAME:-DOCK_X_NAME}:${DOCK_X_TAG:-latest}"
 }
 
-# @internal
+
 dock_x_stop(){
 
   command::echo_eval "docker stop ${DOCK_X_CONTAINER:-dock-x}"
@@ -284,6 +285,7 @@ Commands:
 * shell                           Start a ${DOCK_X_SHELL:-bash} shell into the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
 * logs                            Logs of the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
 * push                            Push the image $FULL_IMAGE_NAME
+* push                            Stop the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
 
 Global Options:
 
@@ -337,28 +339,31 @@ ARGS=("$@")
 
 case $COMMAND in
 "build")
-    dock_x_build "${ARGS[@]}"
+    dock_x_build "${ARGS[@]}" || error::exit $?
     ;;
 "env")
-    dock_x_env "${ARGS[@]}"
+    dock_x_env "${ARGS[@]}" || error::exit $?
     ;;
 "exec")
-    dock_x_exec "${ARGS[@]}"
+    dock_x_exec "${ARGS[@]}" || error::exit $?
     ;;
 "logs")
-    dock_x_logs "${ARGS[@]}"
+    dock_x_logs "${ARGS[@]}" || error::exit $?
     ;;
 "push")
-    dock_x_push "${ARGS[@]}"
+    dock_x_push "${ARGS[@]}" || error::exit $?
     ;;
 "run")
     dock_x_run "${ARGS[@]}" || error::exit $?
+    ;;
+"stop")
+    dock_x_stop
     ;;
 "shell")
     dock_x_shell "${ARGS[@]}" || error::exit $?
     ;;
 *)
-  dock::help synopsis
+  doc::help synopsis
   echo::err "Command $COMMAND is unknown"
   exit 1
 esac
