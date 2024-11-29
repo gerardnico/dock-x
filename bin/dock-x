@@ -28,11 +28,25 @@ dock_x_shell(){
   fi
   DOCK_X_CONTAINER=${DOCK_X_CONTAINER:-dock-x}
   DOCK_X_SHELL=${DOCK_X_SHELL:-/usr/bin/env bash}
-  if ! docker container inspect -f '{{.State.Running}}' "$DOCK_X_CONTAINER" >/dev/null; then
-    echo::warn "The container $DOCK_X_CONTAINER (DOCK_X_CONTAINER) is not running"
-    echo::warn "Executing an ephemeral container image with a shell"
-    dock_x_run --rm --tty --interactive "${DOCK_X_SHELL}"
-    return
+  # Note the docker command fail if the container does not exist
+  # if the container exists, it returns true or false
+  if ! RUNNING_STATE="$(docker container inspect -f '{{.State.Running}}' "$DOCK_X_CONTAINER" 2>/dev/null)"; then
+    # container does not exists
+    RUNNING_STATE="false"
+  else
+    # container exists
+    if [ "$RUNNING_STATE" == "false" ]; then
+      echo::warn "The container ($DOCK_X_CONTAINER) exists, was not running. We deleted it."
+      docker remove "$DOCK_X_CONTAINER" >/dev/null # return tne name of the deleted container
+    fi
+  fi
+  if [ "$RUNNING_STATE" == "false" ]; then
+
+      echo::warn "The container ($DOCK_X_CONTAINER) is not running. (Env: DOCK_X_CONTAINER) "
+      echo::warn "Executing an ephemeral container image with a shell"
+      dock_x_run --rm --tty --interactive "${DOCK_X_SHELL}"
+      return
+
   fi
 
   command::echo_eval "docker exec \
