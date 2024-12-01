@@ -60,10 +60,14 @@ dock-x build
 ### Image environment variables for all dock-x command
 
 ```bash
-DOCK_X_TAG=16.3-latest # the tag of the image (default to latest)
-DOCK_X_NAME=postgres # the name of the image
-DOCK_X_NAMESPACE=gerardnico # the namespace of the image
+# the registry of the image 
 DOCK_X_REGISTRY=ghcr.io # the registry of the image (default to docker.io, ie empty string)
+# the namespace of the image
+DOCK_X_NAMESPACE=gerardnico
+# the tag of the image (default to latest)
+DOCK_X_TAG=16.3-latest
+# the name of the image
+DOCK_X_NAME=postgres
 ```
 
 
