@@ -60,8 +60,8 @@ dock-x build
 ### Image environment variables for all dock-x command
 
 ```bash
-# the registry of the image 
-DOCK_X_REGISTRY=ghcr.io # the registry of the image (default to docker.io, ie empty string)
+# the registry of the image (default to docker.io, ie empty string) 
+DOCK_X_REGISTRY=ghcr.io 
 # the namespace of the image
 DOCK_X_NAMESPACE=gerardnico
 # the tag of the image (default to latest)
