@@ -85,17 +85,18 @@ export DOCK_X_USER=1000:1000
 export DOCK_X_USER_GROUPS=postgres,root 
 # The shell app to run with `dock-x shell` (default to /usr/bin/env bash)
 export DOCK_X_SHELL="/usr/bin/env bash" 
-# All others options can be set in
+# All others options. Example:
 export DOCK_X_RUN_OPTIONS="-d --privileged -v /sys/fs/cgroup/world.scope:/sys/fs/cgroup:rw"
-# You can define the command of the image
+# the command of the image. Example:
 export DOCK_X_RUN_CMD="sleep 1d"
 ```
 
 ### `dock-x build` environment variables
 
-The option of the `dock-x build` command:
+The environment variable of the `dock-x build` command:
+
 ```bash
-# For instance, setting another context
+# Build Options. For instance, setting another context
 export DOCK_X_BUILD_OPTIONS="Dockerfiles/molecule-debian/12.8"
 ```
 
