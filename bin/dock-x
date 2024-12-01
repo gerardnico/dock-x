@@ -66,16 +66,16 @@ dock_x_shell(){
 #
 dock_x_build(){
 
-  args=()
-  if [ $# -eq 0 ]; then
-    args+=(".")
-  else
-    args=("$@")
+  # Set the internal field separator to a colon, but only for the command
+  IFS=' ' read -r -a BUILD_ARGS <<< "${DOCK_X_BUILD_OPTIONS:-}"
+  BUILD_ARGS=("${BUILD_ARGS[@]}" "$@")
+  if [ ${#BUILD_ARGS} -eq 0 ]; then
+    BUILD_ARGS+=(".")
   fi
 
   command::echo_eval "docker build \
     -t ${DOCK_X_REGISTRY:-docker.io}/${DOCK_X_NAMESPACE}/${DOCK_X_NAME}:$DOCK_X_TAG \
-    ${args[*]}
+    ${BUILD_ARGS[*]}
   "
 
 }
@@ -185,7 +185,7 @@ dock_x_run(){
 
 
   DOCKER_OPTIONS=()
-  DOCKER_COMMAND_ARGS=()
+  IFS=' ' read -r -a DOCKER_COMMAND_ARGS <<< "${DOCK_X_RUN_CMD:-}"
   # Parsing
   # We don't do a loop because the drive
   # is shift
@@ -199,23 +199,21 @@ dock_x_run(){
       echo::debug "User flag ($1) found"
       DOCKER_USER_ARG+=("$1")
       ;;
-    --tty|-t|--interactive|-i|-d|--detach)
+    --tty|-t|--interactive|-i|-d|--detach|--privileged)
       echo::debug "Emtpy Option flag ($1) found"
       DOCKER_OPTIONS+=("$1")
       ;;
+    -v|--volume)
+      echo::debug "Value Option flag ($1) found"
+      DOCKER_OPTIONS+=("$1")
+      shift
+      echo::debug "Value ($1) found"
+      DOCKER_OPTIONS+=("$1")
+      ;;
     -*)
-      # Shortcut but the first word without - is the command
-      # if found the next options are arguments options, not docker option
-      if [[ ${#DOCKER_COMMAND_ARGS[@]} -eq 0 ]]; then
-        echo::debug "Value Option flag ($1) found"
-        DOCKER_OPTIONS+=("$1")
-        shift
-        echo::debug "Value Option flag ($1) found"
-        DOCKER_OPTIONS+=("$1")
-      else
-        echo::debug "Command/Arg Options ($1) found"
-        DOCKER_COMMAND_ARGS+=("$1")
-      fi
+      echo::err "Unknown option $1"
+      echo::err "use the DOCK_X_RUN_OPTIONS and DOCK_X_RUN_CMD env variable instead"
+      exit 1
       ;;
     *)
       echo::debug "Command/Arg ($1) found"
@@ -235,6 +233,7 @@ dock_x_run(){
     ${DOCKER_PORTS_ARGS[*]} \
     ${DOCKER_ENV_ARGS[*]} \
     ${DOCKER_OPTIONS[*]} \
+    ${DOCK_X_RUN_OPTIONS:-} \
     $(get_image_full_name) \
     ${DOCKER_COMMAND_ARGS[*]}"
 

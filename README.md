@@ -9,13 +9,14 @@ you are working on a Docker image?
 `dock-x` is here to help.
 
 Just run:
-  * `dock-x build` to build your image
+  * [dock-x build](#dock-x-build-environment-variables) to build your image
   * `dock-x start` to start your container
   * `dock-x push` to push your image
+  * [dock-x push](#dock-x-run-environment-variables) to create a container
   * `dock-x stop` to stop your container
   * `dock-x shell` to run a shell (bash by default) into your container
   * `dock-x logs` to watch the logs of your container
-No parameters needed.
+No parameters needed, only environment variables.
 
 Do you want to build and start your container?
 ```bash
@@ -44,10 +45,6 @@ source .envrc
 * Install `dock-x` with [homebrew](https://brew.sh/)
 ```bash
 brew install --HEAD gerardnico/tap/dockx
-# Add the libraries directory into your path in your `.bashrc` file
-export PATH=$(brew --prefix bashlib)/lib:$PATH
-# or define BASHLIB_LIBRARY_PATH
-export BASHLIB_LIBRARY_PATH=$(brew --prefix bashlib)/lib
 ```
 * Go into your project directory and run your command
 ```bash
@@ -60,7 +57,7 @@ dock-x build
 ## List of environment variables supported by dock-x
 
 
-### Image environment variables
+### Image environment variables for all dock-x command
 
 ```bash
 DOCK_X_TAG=16.3-latest # the tag of the image (default to latest)
@@ -70,20 +67,54 @@ DOCK_X_REGISTRY=ghcr.io # the registry of the image (default to docker.io, ie em
 ```
 
 
-### Run options
+### `dock-x run` environment variables
 
+The env of the `dock-x run` command
 ```bash
-DOCK_X_CONTAINER=containername # the name of the container created (Default to dock-x) 
-DOCK_X_PORTS=5432:5432,8080 # the ports to open (Default to empty) 
-DOCK_X_USER=1000:1000 # the user that will run the image (1000 is the value for a WSL user) Default to empty
-DOCK_X_USER_GROUPS=postgres,root # the groups of the user (Default to empty)
-DOCK_X_SHELL="/usr/bin/env bash" # The shell app to run with `dock-x shell` (default to /usr/bin/env bash)
+ # the name of the container created (Default to dock-x)
+export DOCK_X_CONTAINER=containername
+# the ports to open (Default to empty) 
+export DOCK_X_PORTS=5432:5432,8080 
+# the user that will run the image (1000 is the value for a WSL user) Default to empty 
+export DOCK_X_USER=1000:1000 
+# the groups of the user (Default to empty)
+export DOCK_X_USER_GROUPS=postgres,root 
+# The shell app to run with `dock-x shell` (default to /usr/bin/env bash)
+export DOCK_X_SHELL="/usr/bin/env bash" 
+# All others options can be set in
+export DOCK_X_RUN_OPTIONS="-d --privileged -v /sys/fs/cgroup/world.scope:/sys/fs/cgroup:rw"
+# You can define the command of the image
+export DOCK_X_RUN_CMD="sleep 1d"
+```
+
+### `dock-x build` environment variables
+
+The option of the `dock-x build` command:
+```bash
+# For instance, setting another context
+export DOCK_X_BUILD_OPTIONS="Dockerfiles/molecule-debian/12.8"
 ```
 
 ## How to create your own run command
 
-If you want to set other options/arguments, you need 
-to create a bash file and use it as it was a docker command
+### With the DOCK_X_RUN environment variable
+
+To create you own command, we recommend to set up them in your environment
+```bash
+# the options of the docker run command
+DOCK_X_RUN_OPTIONS="-v "${PWD}"/mount/data:/data \
+  --mount type=bind,source="${PWD}/bin/dbctl",target=/usr/local/bin/dbctl"
+# the command 
+DOCK_X_RUN_CMD="postgres -c shared_buffers=256MB -c max_connections=200"
+```
+
+### With a run wrapper script
+
+You can always create a wrapper script.
+
+> We handle the most known docker options but this method may fail 
+> if the options is unknown. 
+
 
 Example with:
 * 2 mount
@@ -107,10 +138,6 @@ dock-x run \
 You can install `dock-x` with [homebrew](https://brew.sh/)
 ```bash
 brew install --HEAD gerardnico/tap/dockx
-```
-Then set the `BASHLIB_LIBRARY_PATH` 
-```bash
-export BASHLIB_LIBRARY_PATH=$(brew --prefix bashlib)/lib
 ```
 
 It will also install as dependency:
