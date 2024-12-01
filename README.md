@@ -112,8 +112,9 @@ DOCK_X_RUN_CMD="postgres -c shared_buffers=256MB -c max_connections=200"
 
 You can always create a wrapper script.
 
+> [!IMPORTANT]
 > We handle the most known docker options but this method may fail 
-> if the options is unknown. 
+> if the option is unknown. 
 
 
 Example with:
