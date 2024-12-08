@@ -67,9 +67,10 @@ dock_x_shell(){
 dock_x_build(){
 
   # Set the internal field separator to a colon, but only for the command
+  BUILD_ARGS=()
   IFS=' ' read -r -a BUILD_ARGS <<< "${DOCK_X_BUILD_OPTIONS:-}"
   BUILD_ARGS=("${BUILD_ARGS[@]}" "$@")
-  if [ ${#BUILD_ARGS} -eq 0 ]; then
+  if [ "${#BUILD_ARGS[@]}" -eq 0 ]; then
     BUILD_ARGS+=(".")
   fi
 
