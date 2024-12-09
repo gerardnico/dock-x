@@ -228,9 +228,9 @@ dock_x_run(){
   # Start the container
   command::echo_eval "docker run \
     --name ${DOCK_X_CONTAINER:-dock-x} \
+    --rm \
     ${DOCKER_USER_ARG[*]} \
     ${DOCKER_USER_GROUPS_ARGS[*]} \
-    --rm \
     ${DOCKER_PORTS_ARGS[*]} \
     ${DOCKER_ENV_ARGS[*]} \
     ${DOCKER_OPTIONS[*]} \
