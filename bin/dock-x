@@ -274,6 +274,7 @@ dock_x_env(){
   echo "${MARGE}* Container User    : DOCK_X_USER=${DOCK_X_USER:-}"
   echo "${MARGE}* Container Port    : DOCK_X_PORTS=${DOCK_X_PORTS:-}"
   echo "${MARGE}* Container Shell   : DOCK_X_SHELL=${DOCK_X_SHELL:-/usr/bin/env bash}"
+  echo "${MARGE}* Run options       : DOCK_X_RUN_OPTIONS=${DOCK_X_RUN_OPTIONS:-}"
 
 
 
