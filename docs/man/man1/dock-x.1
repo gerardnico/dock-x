@@ -14,17 +14,14 @@
 . ftr VB CB
 . ftr VBI CBI
 .\}
-.TH "dock-x" "1" "" "Version Latest" "Docker Commands driven by environment variables"
+.TH "dock-x" "1" "" "Version Latest" "Quick and Easy Docker Commands driven by environment variables"
 .hy
-.SH dock-x
+.SH NAME
 .PP
-Automated Docker Commands driven by environment variables
-.SS Overview
+Quick and Easy Docker Commands driven by environment variables
+.SH SYNOPSIS
 .PP
-Execute docker commands driven by environment variables
-.SS SYNOPSIS
-.PP
-dock-x - Automated Docker Commands driven by environment variables
+dock-x - Quick and Easy Docker Commands driven by environment variables
 .PP
 Usage:
 .IP
@@ -36,17 +33,26 @@ dock-x command opts
 .PP
 Commands:
 .IP \[bu] 2
-build Build the image DOCK_X_NAMESPACE/DOCK_X_NAME:latest
+build Build the image ghcr.io/gerardnico/DOCK_X_NAME:latest.
+You still needs to give the context as argument.
+.IP \[bu] 2
+env Print the dock-x env
 .IP \[bu] 2
 exec Exec into the container DOCK_X_CONTAINER
 .IP \[bu] 2
 env Print the actual dock-x env that drives the docker command
 .IP \[bu] 2
-shell Start the bash shell into the container DOCK_X_CONTAINER
-.IP \[bu] 2
 logs Logs of the container DOCK_X_CONTAINER
 .IP \[bu] 2
-push Push the image DOCK_X_NAMESPACE/DOCK_X_NAME:latest
+push Push the image ghcr.io/gerardnico/DOCK_X_NAME:latest
+.IP \[bu] 2
+run Run the image ghcr.io/gerardnico/DOCK_X_NAME:latest
+.IP \[bu] 2
+shell Start a bash shell into the container DOCK_X_CONTAINER
+.IP \[bu] 2
+start Start the container DOCK_X_CONTAINER
+.IP \[bu] 2
+stop Stop the container DOCK_X_CONTAINER
 .PP
 Global Options:
 .IP \[bu] 2
@@ -54,9 +60,9 @@ Global Options:
 .PP
 Actual Env:
 .IP \[bu] 2
-Image Registry : DOCK_X_REGISTRY=docker.io
+Image Registry : DOCK_X_REGISTRY=ghcr.io
 .IP \[bu] 2
-Image Namespace : DOCK_X_NAMESPACE=
+Image Namespace : DOCK_X_NAMESPACE=gerardnico
 .IP \[bu] 2
 Image Name : DOCK_X_NAME=
 .IP \[bu] 2
@@ -69,3 +75,5 @@ Container User : DOCK_X_USER=
 Container Port : DOCK_X_PORTS=
 .IP \[bu] 2
 Container Shell : DOCK_X_SHELL=/usr/bin/env bash
+.IP \[bu] 2
+Run options : DOCK_X_RUN_OPTIONS=

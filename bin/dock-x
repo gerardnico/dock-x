@@ -44,7 +44,7 @@ dock_x_shell(){
 
       echo::warn "The container ($DOCK_X_CONTAINER) is not running. (Env: DOCK_X_CONTAINER) "
       echo::warn "Executing an ephemeral container image with a shell"
-      dock_x_run --rm --tty --interactive "${DOCK_X_SHELL}"
+      DOCK_X_RUN_OPTIONS="--rm --tty --interactive" DOCK_X_RUN_CMD="${DOCK_X_SHELL}" dock_x_run
       return
 
   fi
@@ -192,15 +192,12 @@ dock_x_run(){
   # is shift
   while [[ $# -gt 0 ]]; do
     case "$1" in
-    --rm)
-      # Nothing already added
-      ;;
     --user)
       shift
       echo::debug "User flag ($1) found"
       DOCKER_USER_ARG+=("$1")
       ;;
-    --tty|-t|--interactive|-i|-d|--detach|--privileged)
+    --tty|-t|--interactive|-i|-d|--detach|--privileged|--rm)
       echo::debug "Emtpy Option flag ($1) found"
       DOCKER_OPTIONS+=("$1")
       ;;
@@ -228,7 +225,6 @@ dock_x_run(){
   # Start the container
   command::echo_eval "docker run \
     --name ${DOCK_X_CONTAINER:-dock-x} \
-    --rm \
     ${DOCKER_USER_ARG[*]} \
     ${DOCKER_USER_GROUPS_ARGS[*]} \
     ${DOCKER_PORTS_ARGS[*]} \
@@ -270,12 +266,13 @@ dock_x_env(){
   echo "${MARGE}* Image Namespace   : DOCK_X_NAMESPACE=${DOCK_X_NAMESPACE:-}"
   echo "${MARGE}* Image Name        : DOCK_X_NAME=${DOCK_X_NAME:-}"
   echo "${MARGE}* Image Tag         : DOCK_X_TAG=${DOCK_X_TAG:-latest}"
+  echo "${MARGE}* Image Shell       : DOCK_X_SHELL=${DOCK_X_SHELL:-/usr/bin/env bash}"
   echo "${MARGE}* Container Name    : DOCK_X_CONTAINER=${DOCK_X_CONTAINER:-dock-x}"
   echo "${MARGE}* Container User    : DOCK_X_USER=${DOCK_X_USER:-}"
   echo "${MARGE}* Container Port    : DOCK_X_PORTS=${DOCK_X_PORTS:-}"
-  echo "${MARGE}* Container Shell   : DOCK_X_SHELL=${DOCK_X_SHELL:-/usr/bin/env bash}"
   echo "${MARGE}* Run options       : DOCK_X_RUN_OPTIONS=${DOCK_X_RUN_OPTIONS:-}"
-
+  echo "${MARGE}* Run Command       : DOCK_X_RUN_CMD=${DOCK_X_RUN_CMD:-}"
+  echo "${MARGE}* Build Options     : DOCK_X_BUILD_OPTIONS=${DOCK_X_BUILD_OPTIONS:-}"
 
 
 }
@@ -285,7 +282,7 @@ synopsis(){
    FULL_IMAGE_NAME=$(get_image_full_name)
 cat << EOT
 
-$(basename "$0") - Automated Docker Commands driven by environment variables
+$(basename "$0") - Quick and Easy Docker Commands driven by environment variables
 
 Usage:
 \`\`\`bash
@@ -294,13 +291,15 @@ $(basename "$0") command opts
 
 Commands:
 
-* build                           Build the image $FULL_IMAGE_NAME. You still needs to give the context as argument.
-* exec                            Exec into the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
+* build                           Build the image $FULL_IMAGE_NAME
 * env                             Print the actual $(basename "$0") env that drives the docker command
-* shell                           Start a ${DOCK_X_SHELL:-bash} shell into the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
+* exec                            Exec into the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
 * logs                            Logs of the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
 * push                            Push the image $FULL_IMAGE_NAME
-* push                            Stop the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
+* run                             Run the image $FULL_IMAGE_NAME
+* shell                           Start a ${DOCK_X_SHELL:-bash} shell into the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
+* start                           Start the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
+* stop                            Stop the container ${DOCK_X_CONTAINER:-DOCK_X_CONTAINER}
 
 Global Options:
 
