@@ -71,11 +71,11 @@ dock-x build
 ```bash
 # the registry of the image (default to docker.io, ie empty string) 
 DOCK_X_REGISTRY=ghcr.io 
-# the namespace of the image
+# the namespace of the image (called project by the open containers spec)
 DOCK_X_NAMESPACE=gerardnico
 # the tag of the image (default to latest)
 DOCK_X_TAG=16.3-latest
-# the name of the image
+# the name of the image (called image by the open containers spec)
 DOCK_X_NAME=postgres
 ```
 
