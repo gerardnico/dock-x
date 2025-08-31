@@ -61,13 +61,14 @@ dock_x_shell(){
 
 # Build just set the t parameter
 #
+# The DOCK_X_BUILD_OPTIONS arguments are added
+#
 # Example for mono-repo build
 # dock-x build -f Dockerfile ..
 #
 dock_x_build(){
 
-  # Set the internal field separator to a colon, but only for the command
-  BUILD_ARGS=()
+  local BUILD_ARGS=()
   IFS=' ' read -r -a BUILD_ARGS <<< "${DOCK_X_BUILD_OPTIONS:-}"
   BUILD_ARGS=("${BUILD_ARGS[@]}" "$@")
   if [ "${#BUILD_ARGS[@]}" -eq 0 ]; then
