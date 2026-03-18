@@ -124,7 +124,8 @@ To create you own command, we recommend to set up them in your environment
 
 ```bash
 # the options of the docker run command
-DOCK_X_RUN_OPTIONS="-v "${PWD}"/mount/data:/data \
+DOCK_X_RUN_OPTIONS="\
+  -v "${PWD}"/mount/data:/data \
   --mount type=bind,source="${PWD}/bin/dbctl",target=/usr/local/bin/dbctl"
 # the command 
 DOCK_X_RUN_CMD="postgres -c shared_buffers=256MB -c max_connections=200"
