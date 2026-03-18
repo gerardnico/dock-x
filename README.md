@@ -161,7 +161,7 @@ dock-x run \
 You can install `dock-x` with [homebrew](https://brew.sh/)
 
 ```bash
-brew install --HEAD gerardnico/tap/dockx
+brew install gerardnico/tap/dockx
 ```
 
 It will also install as dependency:
