@@ -165,16 +165,6 @@ You can install `dock-x` with [homebrew](https://brew.sh/)
 brew install gerardnico/tap/dockx
 ```
 
-It will also install as dependency:
-
-* [direnv-ext](https://github.com/gerardnico/direnv-ext)
-* [direnv](https://direnv.net/)
-* [bash lib](https://github.com/gerardnico/bash-lib)
-
-### How to contribute
-
-See [CONTRIBUTING.md](.github/CONTRIBUTING.md)
-
 ## Tip
 
 Create a `dx` alias in your `.bashrc` to save some keystrokes.

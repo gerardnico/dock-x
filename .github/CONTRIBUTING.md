@@ -18,4 +18,4 @@ You can now execute the dev/next version with `ndock-x`
 
 ## Release
 
-Execute the [](../contrib/scripts/release)
+Execute the [release script](../contrib/scripts/release)
